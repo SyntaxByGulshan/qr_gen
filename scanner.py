@@ -8,7 +8,7 @@ from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filte
 import nest_asyncio
 nest_asyncio.apply()
 
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"  # <- replace this
+TOKEN = "8046872877:AAEWnloyYZ4JbKa6jCW_3gLRfZzBjLN0_YQ"  # <- replace this
 
 app = Flask(__name__)
 
