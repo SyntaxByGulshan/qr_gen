@@ -4,11 +4,12 @@ import io
 import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
-
+import threading
 import nest_asyncio
+
 nest_asyncio.apply()
 
-TOKEN = "8046872877:AAEWnloyYZ4JbKa6jCW_3gLRfZzBjLN0_YQ"  # <- replace this
+TOKEN = "your-token-here"
 
 app = Flask(__name__)
 
@@ -32,10 +33,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 bot_app = ApplicationBuilder().token(TOKEN).build()
 bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
+# Start bot polling setup (required for webhooks to function correctly)
+threading.Thread(target=bot_app.run_polling, daemon=True).start()
+
 @app.route(f'/{TOKEN}', methods=["POST"])
 async def webhook():
-    update = Update.de_json(request.get_json(force=True), bot_app.bot)
-    await bot_app.process_update(update)
+    try:
+        data = request.get_json(force=True)
+        update = Update(**data)
+        await bot_app.process_update(update)
+    except Exception as e:
+        print("Error processing update:", e)
     return "ok"
 
 @app.route("/")
